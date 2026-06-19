@@ -36,7 +36,7 @@ services:
   jekyll:
     image: ghcr.io/seantrane/image-ruby-jekyll:ruby-3.4.9_jekyll-4.4.1
     container_name: jekyll-v4.4.1
-    pull_policy: if-not-present
+    pull_policy: if_not_present
     build:
       context: .
     env_file:
@@ -44,7 +44,7 @@ services:
     command: sh -c "bundle install && bundle exec jekyll serve --watch --force_polling -H 0.0.0.0 -P 4000 || exit 1"
 ```
 
-`pull_policy: if-not-present` is used because the image tag is explicit and will never change. However, the `ghcr.io/seantrane/image-ruby-jekyll:latest` image will always refer to the latest version published, though not recommended for production usage.
+`pull_policy: if_not_present` is used because the image tag is explicit and will never change. However, the `ghcr.io/seantrane/image-ruby-jekyll:latest` image will always refer to the latest version published, though not recommended for production usage.
 
 ---
 
