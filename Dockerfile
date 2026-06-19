@@ -3,7 +3,7 @@ FROM ruby:${RUBY_VERSION}
 
 # Re-declare after FROM so it's available in the build context
 ARG RUBY_VERSION=3.4.9
-ARG JEKYLL_VERSION=4.4.0
+ARG JEKYLL_VERSION=4.4.1
 
 RUN apt-get update \
   && apt-get install -y \
