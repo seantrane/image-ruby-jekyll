@@ -5,9 +5,6 @@ FROM ruby:${RUBY_VERSION}
 ARG RUBY_VERSION=3.4.9
 ARG JEKYLL_VERSION=4.4.1
 
-# Ensure GHCR images are associated with specific repo
-LABEL org.opencontainers.image.source=https://github.com/seantrane/image-ruby-jekyll
-
 RUN apt-get update \
   && apt-get install -y \
     build-essential \

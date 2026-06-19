@@ -30,7 +30,7 @@ jobs:
 
           echo "ruby=$RUBY_VERSION" >> "$GITHUB_OUTPUT"
           echo "jekyll=$JEKYLL_VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=ruby${RUBY_VERSION}-jekyll${JEKYLL_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=ruby-${RUBY_VERSION}_jekyll-${JEKYLL_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Skip if release already exists
         id: check

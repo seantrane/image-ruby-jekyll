@@ -1,6 +1,6 @@
 # Ruby-Jekyll image
 
-> Prebuilt Ruby-Jekyll images to improve the speed and reliability of dependencies when developing and publishing Jekyll websites.
+> Prebuilt Ruby-Jekyll images to improve the speed, security and reliability of dependencies when developing and publishing Jekyll websites.
 
 ![workflows](https://img.shields.io/badge/-Workflows:-white?style=flat-square) [![Integration](https://github.com/seantrane/image-ruby-jekyll/actions/workflows/integration.yml/badge.svg)](https://github.com/seantrane/image-ruby-jekyll/actions/workflows/integration.yml) [![Delivery](https://github.com/seantrane/image-ruby-jekyll/actions/workflows/delivery.yml/badge.svg)](https://github.com/seantrane/image-ruby-jekyll/actions/workflows/delivery.yml) [![Deployment](https://github.com/seantrane/image-ruby-jekyll/actions/workflows/deployment.yml/badge.svg)](https://github.com/seantrane/image-ruby-jekyll/actions/workflows/deployment.yml)
 
@@ -17,7 +17,7 @@
 
 ## About <a id="about"></a>
 
-`image-ruby-jekyll` is used to manage prebuilt Ruby images with the [Jekyll static website generator](https://jekyllrb.com) preinstalled, along with any dependencies they require to work with each other. The Ruby version will always be pinned to highest version compatible (e.g. `v3.4.9`) with the highest version of Jekyll that exists (e.g. `v4.4.1`).
+`image-ruby-jekyll` is used to manage prebuilt Ruby images with the [Jekyll static website generator](https://jekyllrb.com) preinstalled, along with any dependencies they require to work with each other. The Ruby version will always be pinned to highest version compatible (e.g. `3.4.9`) with the highest version of Jekyll that exists (e.g. `4.4.1`).
 
 The only development task to perform with this repo is submit a pull-request with version changes to Ruby and/or Jekyll. If the Integration workflow succeeds, then a merge to main will trigger a new release and publish a new image. The published image is tagged with the Ruby-Jekyll versions inside it.
 
@@ -26,7 +26,7 @@ The only development task to perform with this repo is submit a pull-request wit
 In a `Dockerfile`:
 
 ```dockerfile
-FROM ghcr.io/seantrane/image-ruby-jekyll:ruby3.4.9-jekyll-4.4.1
+FROM ghcr.io/seantrane/image-ruby-jekyll:ruby-3.4.9_jekyll-4.4.1
 ```
 
 In a `docker-compose.yml` file:
@@ -34,8 +34,8 @@ In a `docker-compose.yml` file:
 ```yaml
 services:
   jekyll:
-    image: ghcr.io/seantrane/image-ruby-jekyll:ruby3.4.9-jekyll-4.4.1
-    container_name: jekyll-4.4.1
+    image: ghcr.io/seantrane/image-ruby-jekyll:ruby-3.4.9_jekyll-4.4.1
+    container_name: jekyll-v4.4.1
     pull_policy: if-not-present
     build:
       context: .

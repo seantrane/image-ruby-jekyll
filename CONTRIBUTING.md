@@ -148,12 +148,12 @@ PR into main
 PR merged into main
   └── delivery.yml triggers
         ├── parses RUBY_VERSION + JEKYLL_VERSION from Dockerfile ARGs
-        ├── checks if tag ruby3.4.9-jekyll4.4.1 already exists
-        └── creates GitHub release → ruby3.4.9-jekyll4.4.1
+        ├── checks if tag ruby-3.4.9_jekyll-4.4.1 already exists
+        └── creates GitHub release → ruby-3.4.9_jekyll-4.4.1
               └── deployment.yml triggers
-                    ├── parses versions back out of the tag
-                    ├── passes them as --build-args to Docker
-                    └── pushes image to ghcr.io/org/repo:ruby3.4.9-jekyll4.4.1
+                    ├── parses versions back out of the tag (disabled)
+                    ├── passes them as --build-args to Docker (disabled)
+                    └── pushes image to ghcr.io/org/repo:ruby-3.4.9_jekyll-4.4.1
                                           ghcr.io/org/repo:latest
 ```
 
@@ -164,7 +164,7 @@ The _"skip if release already exists"_ guard in `delivery.yml` is important. Any
 - No secrets setup needed — `GITHUB_TOKEN` is provided automatically and the `packages: write` permission gives it access to GHCR.
 - The `cache-from/cache-to: type=gha` lines use GitHub Actions cache to speed up repeat builds significantly, since the `ruby:3` base layer is large.
 - The image will be published at `ghcr.io/<org-or-username>/<repo-name>` and will be private by default. You can make it public under the package settings on GitHub.
-- The image tag will be auto-generated using Ruby/Jekyll versions from the Dockerfile: `ghcr.io/<org-or-username>/<repo>:ruby3.4.9-jekyll-4.4.1`
+- The image tag will be auto-generated using Ruby/Jekyll versions from the Dockerfile: `ghcr.io/<org-or-username>/<repo>:ruby-3.4.9_jekyll-4.4.1`
 
 ---
 

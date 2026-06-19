@@ -26,15 +26,16 @@ jobs:
         # https://github.com/actions/checkout/releases/tag/v6.0.3
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
 
-      - name: Parse versions from release tag
-        id: versions
-        run: |
-          TAG="${{ github.ref_name }}"
-          RUBY_VERSION=$(echo "$TAG" | sed 's/ruby\([^-]*\)-.*/\1/')
-          JEKYLL_VERSION=$(echo "$TAG" | sed 's/.*jekyll//')
+      # Enable if need to override build-arguments defaults
+      # - name: Parse versions from release tag
+      #   id: versions
+      #   run: |
+      #     TAG="${{ github.ref_name }}"
+      #     RUBY_VERSION=$(echo "$TAG" | sed 's/ruby-\([^-]*\)_.*/\1/')
+      #     JEKYLL_VERSION=$(echo "$TAG" | sed 's/.*jekyll-//')
 
-          echo "ruby=$RUBY_VERSION" >> "$GITHUB_OUTPUT"
-          echo "jekyll=$JEKYLL_VERSION" >> "$GITHUB_OUTPUT"
+      #     echo "ruby=$RUBY_VERSION" >> "$GITHUB_OUTPUT"
+      #     echo "jekyll=$JEKYLL_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Log in to GitHub Container Registry
         # https://github.com/docker/login-action/releases/tag/v4.2.0
@@ -54,14 +55,16 @@ jobs:
         with:
           context: .
           push: true
-          build-args: |
-            RUBY_VERSION=${{ steps.versions.outputs.ruby }}
-            JEKYLL_VERSION=${{ steps.versions.outputs.jekyll }}
+          # Enable if need to override build-arguments defaults
+          # build-args: |
+          #   RUBY_VERSION=${{ steps.versions.outputs.ruby }}
+          #   JEKYLL_VERSION=${{ steps.versions.outputs.jekyll }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           labels: |
             org.opencontainers.image.version=${{ github.ref_name }}
             org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
