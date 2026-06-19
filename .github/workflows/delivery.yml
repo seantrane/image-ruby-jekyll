@@ -1,0 +1,54 @@
+---
+name: Delivery
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  create-release:
+    runs-on: ${{ fromJson(vars.GH_RUNNER || '["ubuntu-latest"]') }}
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        # https://github.com/actions/checkout/releases/tag/v6.0.3
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+
+      - name: Extract versions from Dockerfile
+        id: versions
+        run: |
+          RUBY_VERSION=$(grep -m1 'ARG RUBY_VERSION=' Dockerfile | cut -d= -f2)
+          JEKYLL_VERSION=$(grep -m1 'ARG JEKYLL_VERSION=' Dockerfile | cut -d= -f2)
+
+          echo "ruby=$RUBY_VERSION" >> "$GITHUB_OUTPUT"
+          echo "jekyll=$JEKYLL_VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=ruby${RUBY_VERSION}-jekyll${JEKYLL_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Skip if release already exists
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.versions.outputs.tag }}"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub release
+        if: steps.check.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.versions.outputs.tag }}" \
+            --title "Ruby ${{ steps.versions.outputs.ruby }} / Jekyll ${{ steps.versions.outputs.jekyll }}" \
+            --notes "Docker image built with Ruby ${{ steps.versions.outputs.ruby }} and Jekyll ${{ steps.versions.outputs.jekyll }}." \
+            --latest

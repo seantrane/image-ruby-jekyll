@@ -1,0 +1,64 @@
+---
+name: Integration
+
+on:
+  pull_request:
+    branches: [main, master, develop, 'releases/**', 'feat/**', 'fix/**']
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        # https://github.com/actions/checkout/releases/tag/v6.0.3
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+
+      - name: Extract versions from Dockerfile
+        id: versions
+        run: |
+          RUBY_VERSION=$(grep -m1 'ARG RUBY_VERSION=' Dockerfile | cut -d= -f2)
+          JEKYLL_VERSION=$(grep -m1 'ARG JEKYLL_VERSION=' Dockerfile | cut -d= -f2)
+
+          echo "ruby=$RUBY_VERSION" >> "$GITHUB_OUTPUT"
+          echo "jekyll=$JEKYLL_VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=ruby${RUBY_VERSION}-jekyll${JEKYLL_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        # https://github.com/docker/setup-buildx-action/releases/tag/v4.1.0
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5
+
+      - name: Build image (no push)
+        # https://github.com/docker/build-push-action/releases/tag/v7.2.0
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf
+        with:
+          context: .
+          push: false
+          build-args: |
+            RUBY_VERSION=${{ steps.versions.outputs.ruby }}
+            JEKYLL_VERSION=${{ steps.versions.outputs.jekyll }}
+          tags: integration-test:${{ steps.versions.outputs.tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Verify Bundler is installed
+        run: |
+          docker run --rm integration-test:${{ steps.versions.outputs.tag }} \
+            bundle --version
+
+      - name: Verify Jekyll is installed
+        run: |
+          docker run --rm integration-test:${{ steps.versions.outputs.tag }} \
+            jekyll --version
+
+      - name: Verify Node.js is installed
+        run: |
+          docker run --rm integration-test:${{ steps.versions.outputs.tag }} \
+            node --version
