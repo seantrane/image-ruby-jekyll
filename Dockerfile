@@ -14,10 +14,12 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* \
   ;
 
-WORKDIR /srv/jekyll
+ENV GEM_HOME="/usr/local/bundle"
+ENV PATH=$GEM_HOME/bin:$GEM_HOME/gems/bin:$PATH
 
-# Install Bundler and pinned Jekyll version
 RUN gem install bundler jekyll:${JEKYLL_VERSION}
+
+WORKDIR /srv/jekyll
 
 # Install common Jekyll plugins
 RUN gem install \
